@@ -55,8 +55,8 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
 
-          # Instalar pacotes essenciais do SDK e build-tools com AIDL
-          $HOME/android-sdk/tools/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2" "build-tools;33.0.2/aidl"
+          # Instalar pacotes essenciais do SDK
+          $HOME/android-sdk/tools/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2"
 
           # Aceitar licenças do SDK
           yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
@@ -65,8 +65,10 @@ jobs:
         run: |
           echo "Verificando a instalação do AIDL..."
           
+          # Verificar se o AIDL está presente no build-tools
           if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
             echo "Erro: AIDL não encontrado! Instalando novamente..."
+            # Tentando reinstalar o build-tools
             $HOME/android-sdk/tools/bin/sdkmanager --install "build-tools;33.0.2"
           else
             echo "AIDL encontrado em: $ANDROID_HOME/build-tools/33.0.2/aidl"
