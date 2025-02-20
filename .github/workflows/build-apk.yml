@@ -44,14 +44,12 @@ jobs:
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Instalar Build-Tools e AIDL
+      - name: Instalar Build-Tools 33.0.2
         run: |
           sdkmanager --install "build-tools;33.0.2" "platform-tools" "platforms;android-34"
-          sdkmanager --install "platform-tools" "platforms;android-34" "sources;android-34"
-          sdkmanager --install "build-tools;33.0.2" "aidl" --verbose
-          yes | sdkmanager --licenses || true  
+          yes | sdkmanager --licenses || true
 
-      - name: Verificar se AIDL está instalado corretamente
+      - name: Verificar se AIDL está instalado
         run: |
           if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
             echo "Erro: AIDL não encontrado!"
