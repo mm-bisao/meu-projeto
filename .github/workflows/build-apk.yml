@@ -39,13 +39,17 @@ jobs:
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
 
-      - name: Remover versões problemáticas do Build-Tools
+      - name: Criar diretório de licenças do Android SDK
         run: |
-          sdkmanager --uninstall "build-tools;36.0.0-rc5" || true
+          mkdir -p $ANDROID_HOME/licenses
 
-      - name: Instalar versão compatível do Android Build-Tools
+      - name: Aceitar todas as licenças do SDK
         run: |
-          sdkmanager --install "build-tools;34.0.0" "platform-tools" "platforms;android-34"
+          yes | sdkmanager --licenses
+
+      - name: Instalar Android Build-Tools 36.0.0-rc5
+        run: |
+          sdkmanager --install "build-tools;36.0.0-rc5" "platform-tools" "platforms;android-34"
           yes | sdkmanager --licenses    
 
       - name: Construir o APK
@@ -54,8 +58,4 @@ jobs:
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
           buildozer -v android debug
 
-      - name: Fazer upload do APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: bin/*.apk
+      - name
