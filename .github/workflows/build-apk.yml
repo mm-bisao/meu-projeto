@@ -17,7 +17,11 @@ jobs:
       - name: Instalar dependências do sistema
         run: |
           sudo apt update
-          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl openjdk-11-jdk
+          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl openjdk-11-jdk maven
+
+      - name: Instalar JAXB
+        run: |
+          sudo apt install -y libjaxb-api-java libjaxb-impl-java
 
       - name: Instalar Buildozer
         run: |
