@@ -17,7 +17,7 @@ jobs:
       - name: Instalar dependências do sistema
         run: |
           sudo apt update
-          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl
+          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl openjdk-11-jdk
 
       - name: Instalar Buildozer
         run: |
@@ -26,46 +26,49 @@ jobs:
 
       - name: Baixar e Instalar Android SDK e Ferramentas de Build
         run: |
-          # Baixar a versão mais recente do Android SDK Command-Line Tools
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
-
+          
           # Baixar e extrair os arquivos do SDK
           curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           unzip sdk-tools.zip -d latest
           rm sdk-tools.zip
-
-          # Verificar se sdkmanager foi instalado corretamente
+          
+          # Verificar se sdkmanager foi extraído corretamente
           if [ ! -f "$HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager" ]; then
             echo "Erro: sdkmanager não encontrado!"
             exit 1
           fi
-
+          
           # Adicionar o sdkmanager ao PATH para garantir que seja encontrado
           echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-
+          
           # Configurar as variáveis de ambiente
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
 
-          # Instalar pacotes essenciais do SDK, incluindo versão estável do build-tools
+          # Instalar pacotes essenciais do SDK
           $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2"
-
-          # Aceitar todas as licenças do SDK Android
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          
+          # Aceitar licenças do SDK Android
+          echo "Aceitando licenças do Android SDK..."
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Verificar instalação do AIDL e SDK
         run: |
-          # Verificar se o AIDL está presente e se a instalação do SDK foi concluída
+          echo "Verificando a instalação do AIDL..."
+          
+          # Verificar se o AIDL foi instalado corretamente
           if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
             echo "Erro: AIDL não encontrado! Instalando novamente..."
             $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;33.0.2"
           else
             echo "AIDL encontrado em: $ANDROID_HOME/build-tools/33.0.2/aidl"
           fi
-
+          
           # Verificar se sdkmanager está funcionando
+          echo "Verificando se sdkmanager funciona corretamente..."
           if ! $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --list; then
             echo "Erro: sdkmanager falhou ao listar os pacotes!"
             exit 1
@@ -75,6 +78,10 @@ jobs:
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH
+          
+          # Log para verificar o caminho do SDK
+          echo "Caminho do SDK: $ANDROID_HOME"
+          
           buildozer -v android debug
 
       - name: Fazer upload do APK
