@@ -28,7 +28,7 @@ jobs:
         run: |
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
-          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           unzip sdk-tools.zip -d latest
           rm sdk-tools.zip
 
@@ -43,12 +43,10 @@ jobs:
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Baixar e instalar manualmente Build-Tools 36-rc5
+      - name: Instalar Android Build-Tools 33.0.2 (versão estável)
         run: |
-          mkdir -p $ANDROID_HOME/build-tools/36.0.0-rc5
-          curl -o build-tools.zip https://dl.google.com/android/repository/build-tools_r36-rc5-linux.zip
-          unzip build-tools.zip -d $ANDROID_HOME/build-tools/
-          rm build-tools.zip
+          sdkmanager --install "build-tools;33.0.2" "platform-tools" "platforms;android-34"
+          yes | sdkmanager --licenses || true  
 
       - name: Construir o APK
         run: |
