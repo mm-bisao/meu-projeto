@@ -17,16 +17,16 @@ jobs:
       - name: Instalar dependências do sistema
         run: |
           sudo apt update
-          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl openjdk-11-jdk maven
+          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl openjdk-8-jdk
 
-      - name: Baixar JAXB via Maven
+      - name: Configurar JDK 8
         run: |
-          mkdir -p $HOME/jaxb
-          cd $HOME/jaxb
-          # Baixar os artefatos JAXB mais recentes
-          mvn dependency:get -Dartifact=javax.xml.bind:jaxb-api:2.4.0
-          mvn dependency:get -Dartifact=org.glassfish.jaxb:jaxb-impl:2.4.0
-          
+          # Definir as variáveis de ambiente para o JDK 8
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export PATH=$JAVA_HOME/bin:$PATH
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+          echo "PATH=$PATH" >> $GITHUB_ENV
+
       - name: Instalar Buildozer
         run: |
           pip install --upgrade cython
