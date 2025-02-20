@@ -26,13 +26,20 @@ jobs:
 
       - name: Instalar Android SDK e Ferramentas de Build
         run: |
+          # Baixar e instalar o SDK Android
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
           curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           unzip sdk-tools.zip -d latest
           rm sdk-tools.zip
 
-          # Instalar o SDK e a plataforma Android
+          # Configurar o Android SDK
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+
+          # Instalar os pacotes necessários
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;33.0.2"
 
       - name: Aceitar todas as licenças do SDK
