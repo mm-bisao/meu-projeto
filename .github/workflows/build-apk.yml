@@ -55,8 +55,8 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
 
-          # Instalar pacotes essenciais do SDK
-          $HOME/android-sdk/tools/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2"
+          # Instalar pacotes essenciais do SDK e build-tools com AIDL
+          $HOME/android-sdk/tools/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2" "build-tools;33.0.2/aidl"
 
           # Aceitar licenças do SDK
           yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
