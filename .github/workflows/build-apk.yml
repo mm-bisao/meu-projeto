@@ -61,20 +61,26 @@ jobs:
           # Aceitar licenças do SDK
           yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
 
-      - name: Verificar instalação do AIDL e SDK
+      - name: Instalar Build-Tools e AIDL
         run: |
-          echo "Verificando a instalação do AIDL..."
+          # Instalar versões específicas do build-tools e do AIDL
+          $HOME/android-sdk/tools/bin/sdkmanager --install "build-tools;33.0.2"
           
-          # Verificar se o AIDL está presente no build-tools
+          # Verificar se o AIDL foi instalado corretamente
           if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
-            echo "Erro: AIDL não encontrado! Instalando novamente..."
-            # Tentando reinstalar o build-tools
+            echo "Erro: AIDL não encontrado! Tentando reinstalar build-tools..."
             $HOME/android-sdk/tools/bin/sdkmanager --install "build-tools;33.0.2"
+            if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
+              echo "Erro: AIDL ainda não foi instalado!"
+              exit 1
+            fi
           else
             echo "AIDL encontrado em: $ANDROID_HOME/build-tools/33.0.2/aidl"
           fi
-          
-          echo "Verificando se sdkmanager funciona corretamente..."
+
+      - name: Verificar SDK
+        run: |
+          # Verificar se sdkmanager está funcionando corretamente
           if ! $HOME/android-sdk/tools/bin/sdkmanager --list; then
             echo "Erro: sdkmanager falhou ao listar os pacotes!"
             exit 1
