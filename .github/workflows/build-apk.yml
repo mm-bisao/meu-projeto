@@ -17,7 +17,7 @@ jobs:
       - name: Instalar dependências do sistema
         run: |
           sudo apt update
-          sudo apt install -y python3-pip ffmpeg libncurses5 libffi-dev libssl-dev libnss3 unzip
+          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip
 
       - name: Instalar Buildozer
         run: |
