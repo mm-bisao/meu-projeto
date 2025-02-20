@@ -48,7 +48,7 @@ jobs:
         run: |
           sdkmanager --install "build-tools;33.0.2" "platform-tools" "platforms;android-34"
           sdkmanager --install "platform-tools" "platforms;android-34" "sources;android-34"
-          sdkmanager --install "build-tools;33.0.2" --verbose
+          sdkmanager --install "build-tools;33.0.2" "aidl" --verbose
           yes | sdkmanager --licenses || true  
 
       - name: Verificar se AIDL está instalado corretamente
@@ -56,6 +56,8 @@ jobs:
           if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
             echo "Erro: AIDL não encontrado!"
             exit 1
+          else
+            echo "AIDL encontrado em: $ANDROID_HOME/build-tools/33.0.2/aidl"
           fi
 
       - name: Construir o APK
