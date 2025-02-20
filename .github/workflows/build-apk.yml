@@ -23,9 +23,9 @@ jobs:
         run: |
           mkdir -p $HOME/jaxb
           cd $HOME/jaxb
-          # Baixar os artefatos JAXB do Maven
-          mvn dependency:get -Dartifact=javax.xml.bind:jaxb-api:2.3.1
-          mvn dependency:get -Dartifact=org.glassfish.jaxb:jaxb-impl:2.3.1
+          # Baixar os artefatos JAXB mais recentes
+          mvn dependency:get -Dartifact=javax.xml.bind:jaxb-api:2.4.0
+          mvn dependency:get -Dartifact=org.glassfish.jaxb:jaxb-impl:2.4.0
           
       - name: Instalar Buildozer
         run: |
