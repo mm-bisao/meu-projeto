@@ -39,6 +39,10 @@ jobs:
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
 
+      - name: Remover versões problemáticas do Build-Tools
+        run: |
+          sdkmanager --uninstall "build-tools;36.0.0-rc5" || true
+
       - name: Instalar versão compatível do Android Build-Tools
         run: |
           sdkmanager --install "build-tools;34.0.0" "platform-tools" "platforms;android-34"
