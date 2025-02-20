@@ -17,7 +17,7 @@ jobs:
       - name: Instalar dependências do sistema
         run: |
           sudo apt update
-          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip
+          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl
 
       - name: Instalar Buildozer
         run: |
@@ -33,27 +33,38 @@ jobs:
           unzip sdk-tools.zip -d latest
           rm sdk-tools.zip
 
-          # Configurar o Android SDK
+          # Verificar se sdkmanager foi instalado corretamente
+          if [ ! -f "$HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager" ]; then
+            echo "Erro: sdkmanager não encontrado!"
+            exit 1
+          fi
+
+          # Configurar as variáveis de ambiente
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
 
-          # Instalar os pacotes necessários
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;33.0.2"
+          # Instalar pacotes essenciais do SDK, incluindo versão estável do build-tools
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2"
 
-      - name: Aceitar todas as licenças do SDK
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # Aceitar todas as licenças do SDK Android
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Verificar o Build-Tools e AIDL
+      - name: Verificar instalação do AIDL e SDK
         run: |
-          # Verificar se o AIDL está presente
+          # Verificar se o AIDL está presente e se a instalação do SDK foi concluída
           if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
-            echo "Erro: AIDL não encontrado!"
-            exit 1
+            echo "Erro: AIDL não encontrado! Instalando novamente..."
+            $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;33.0.2"
           else
             echo "AIDL encontrado em: $ANDROID_HOME/build-tools/33.0.2/aidl"
+          fi
+
+          # Verificar se sdkmanager está funcionando
+          if ! $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --list; then
+            echo "Erro: sdkmanager falhou ao listar os pacotes!"
+            exit 1
           fi
 
       - name: Construir o APK
