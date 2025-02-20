@@ -24,6 +24,11 @@ jobs:
           pip install --upgrade cython
           pip install buildozer
 
+      - name: Instalar versão compatível do Android Build-Tools
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses    
+
       - name: Aceitar licenças do Android SDK
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
