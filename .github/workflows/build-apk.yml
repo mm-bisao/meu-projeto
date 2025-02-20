@@ -19,10 +19,14 @@ jobs:
           sudo apt update
           sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl openjdk-11-jdk maven
 
-      - name: Instalar JAXB
+      - name: Baixar JAXB via Maven
         run: |
-          sudo apt install -y libjaxb-api-java libjaxb-impl-java
-
+          mkdir -p $HOME/jaxb
+          cd $HOME/jaxb
+          # Baixar os artefatos JAXB do Maven
+          mvn dependency:get -Dartifact=javax.xml.bind:jaxb-api:2.3.1
+          mvn dependency:get -Dartifact=org.glassfish.jaxb:jaxb-impl:2.3.1
+          
       - name: Instalar Buildozer
         run: |
           pip install --upgrade cython
@@ -30,16 +34,14 @@ jobs:
 
       - name: Baixar e Instalar Android SDK Completo
         run: |
-          # Baixar o SDK completo, incluindo todas as ferramentas necessárias
           mkdir -p $HOME/android-sdk
           cd $HOME/android-sdk
           
-          # Baixar a versão mais recente do Android SDK (instalador completo)
+          # Baixar a versão mais recente do Android SDK
           curl -o android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
           unzip android-sdk.zip -d $HOME/android-sdk
           rm android-sdk.zip
           
-          # Verificar se sdkmanager foi extraído corretamente
           if [ ! -f "$HOME/android-sdk/tools/bin/sdkmanager" ]; then
             echo "Erro: sdkmanager não encontrado!"
             exit 1
@@ -63,7 +65,6 @@ jobs:
         run: |
           echo "Verificando a instalação do AIDL..."
           
-          # Verificar se o AIDL foi instalado corretamente
           if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
             echo "Erro: AIDL não encontrado! Instalando novamente..."
             $HOME/android-sdk/tools/bin/sdkmanager --install "build-tools;33.0.2"
@@ -71,7 +72,6 @@ jobs:
             echo "AIDL encontrado em: $ANDROID_HOME/build-tools/33.0.2/aidl"
           fi
           
-          # Verificar se sdkmanager está funcionando
           echo "Verificando se sdkmanager funciona corretamente..."
           if ! $HOME/android-sdk/tools/bin/sdkmanager --list; then
             echo "Erro: sdkmanager falhou ao listar os pacotes!"
@@ -82,10 +82,7 @@ jobs:
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export PATH=$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH
-          
-          # Log para verificar o caminho do SDK
           echo "Caminho do SDK: $ANDROID_HOME"
-          
           buildozer -v android debug
 
       - name: Fazer upload do APK
