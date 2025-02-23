@@ -49,8 +49,8 @@ jobs:
 
       - name: Construir o APK com Gradle
         run: |
-          # Acesse o diretório do seu projeto Android
-          cd path/to/your/project
+          # Mudar para o diretório correto do projeto (assumindo que está na raiz)
+          cd $GITHUB_WORKSPACE
 
           # Executar Gradle para construir o APK
           ./gradlew assembleRelease
