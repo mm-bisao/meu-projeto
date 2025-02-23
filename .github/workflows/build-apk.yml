@@ -40,18 +40,21 @@ jobs:
           mkdir -p $HOME/android-sdk
           cd $HOME/android-sdk
           
-          # Baixar a versão mais recente do Android SDK
-          curl -o android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
-          unzip android-sdk.zip -d $HOME/android-sdk
-          rm android-sdk.zip
+          # Baixar a versão mais recente do Android SDK Command-Line Tools
+          curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+          unzip commandlinetools.zip -d $HOME/android-sdk
+          rm commandlinetools.zip
           
-          if [ ! -f "$HOME/android-sdk/tools/bin/sdkmanager" ]; then
+          # Verificar se sdkmanager foi instalado corretamente
+          if [ ! -f "$HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager" ]; then
             echo "Erro: sdkmanager não encontrado!"
+            ls -la $HOME/android-sdk/cmdline-tools/latest/bin/
             exit 1
           fi
+          echo "sdkmanager encontrado!"
 
           # Adicionar sdkmanager ao PATH
-          echo "$HOME/android-sdk/tools/bin" >> $GITHUB_PATH
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
           # Configurar variáveis de ambiente
@@ -59,10 +62,10 @@ jobs:
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
 
           # Instalar pacotes essenciais do SDK, incluindo uma versão estável do build-tools
-          $HOME/android-sdk/tools/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2"
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2"
 
       - name: Aceitar Licenças do Android SDK
-        run: yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
+        run: yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Instalar Build-Tools e AIDL
         run: |
