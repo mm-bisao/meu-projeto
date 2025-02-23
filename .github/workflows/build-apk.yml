@@ -35,7 +35,7 @@ jobs:
           pip install --upgrade cython
           pip install buildozer
 
-            - name: Baixar e Instalar Android SDK Completo
+      - name: Baixar e Instalar Android SDK Completo
         run: |
           mkdir -p $HOME/android-sdk
           cd $HOME/android-sdk
