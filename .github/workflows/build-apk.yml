@@ -27,6 +27,9 @@ jobs:
           echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
           echo "PATH=$PATH" >> $GITHUB_ENV
 
+      - name: Aceitar Licenças do Android SDK
+        run: yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
+       
       - name: Instalar Buildozer
         run: |
           pip install --upgrade cython
