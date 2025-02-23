@@ -36,7 +36,10 @@ jobs:
           curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
           unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
           rm commandlinetools.zip
-          
+
+          # Corrigir a estrutura do diretório
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+
           # Verificar a estrutura de diretórios
           if [ ! -d "$HOME/android-sdk/cmdline-tools/latest/bin" ]; then
             echo "Erro: A estrutura do diretório cmdline-tools/latest/bin não foi criada corretamente!"
