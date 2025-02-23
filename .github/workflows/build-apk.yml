@@ -28,8 +28,8 @@ jobs:
           echo "PATH=$PATH" >> $GITHUB_ENV
 
       - name: Aceitar Licenças do Android SDK
-        run: yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
-       
+        run: yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+
       - name: Instalar Buildozer
         run: |
           pip install --upgrade cython
@@ -70,12 +70,12 @@ jobs:
       - name: Instalar Build-Tools e AIDL
         run: |
           # Instalar versões específicas do build-tools e do AIDL
-          $HOME/android-sdk/tools/bin/sdkmanager --install "build-tools;33.0.2"
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;33.0.2"
           
           # Verificar se o AIDL foi instalado corretamente
           if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
             echo "Erro: AIDL não encontrado! Tentando reinstalar build-tools..."
-            $HOME/android-sdk/tools/bin/sdkmanager --install "build-tools;33.0.2"
+            $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;33.0.2"
             if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
               echo "Erro: AIDL ainda não foi instalado!"
               exit 1
@@ -87,7 +87,7 @@ jobs:
       - name: Verificar SDK
         run: |
           # Verificar se sdkmanager está funcionando corretamente
-          if ! $HOME/android-sdk/tools/bin/sdkmanager --list; then
+          if ! $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --list; then
             echo "Erro: sdkmanager falhou ao listar os pacotes!"
             exit 1
           fi
@@ -95,7 +95,7 @@ jobs:
       - name: Construir o APK
         run: |
           export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH
           echo "Caminho do SDK: $ANDROID_HOME"
           buildozer -v android debug
 
@@ -104,3 +104,4 @@ jobs:
         with:
           name: app-release
           path: bin/*.apk
+
