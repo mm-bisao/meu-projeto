@@ -1,6 +1,6 @@
-name: Build APK
+name: Build APK with Gradle
 
-on: 
+on:
   push:
     branches:
       - main
@@ -14,99 +14,49 @@ jobs:
       - name: Checar código
         uses: actions/checkout@v4
 
-      - name: Instalar dependências do sistema
+      - name: Instalar dependências
         run: |
           sudo apt update
-          sudo apt install -y python3-pip ffmpeg libncurses-dev libffi-dev libssl-dev libnss3 unzip curl openjdk-8-jdk
+          sudo apt install -y openjdk-8-jdk wget unzip curl
 
-      - name: Configurar JDK 8
+      - name: Instalar Gradle
         run: |
-          # Definir as variáveis de ambiente para o JDK 8
-          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-          export PATH=$JAVA_HOME/bin:$PATH
-          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
-          echo "PATH=$PATH" >> $GITHUB_ENV
+          # Baixar e configurar o Gradle
+          wget https://services.gradle.org/distributions/gradle-7.4.2-bin.zip
+          unzip gradle-7.4.2-bin.zip
+          sudo mv gradle-7.4.2 /opt/gradle
+          echo "export PATH=$PATH:/opt/gradle/bin" >> ~/.bashrc
+          source ~/.bashrc
 
-      - name: Baixar e Instalar Android SDK Command-line Tools
+      - name: Configurar JDK
+        run: |
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+
+      - name: Baixar e instalar o Android SDK
         run: |
           mkdir -p $HOME/android-sdk/cmdline-tools
-          cd $HOME/android-sdk
-          
-          # Baixar e extrair o SDK Command-Line Tools
           curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
           unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
           rm commandlinetools.zip
 
-          # Corrigir a estrutura do diretório
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-
-          # Verificar a estrutura de diretórios
-          if [ ! -d "$HOME/android-sdk/cmdline-tools/latest/bin" ]; then
-            echo "Erro: A estrutura do diretório cmdline-tools/latest/bin não foi criada corretamente!"
-            ls -la $HOME/android-sdk/cmdline-tools
-            exit 1
-          fi
-          echo "sdkmanager encontrado em: $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager"
-
-          # Adicionar sdkmanager ao PATH
           echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
-          # Configurar variáveis de ambiente
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-
-      - name: Aceitar Licenças do Android SDK
+      - name: Aceitar Licenças do SDK
         run: |
-          echo "Aceitando as licenças..."
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-          
-          # Tentar forçar instalação de pacotes específicos
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;33.0.2" "platform-tools" "platforms;android-34"
 
-      - name: Instalar Buildozer
+      - name: Construir o APK com Gradle
         run: |
-          pip install --upgrade cython
-          pip install buildozer
+          # Acesse o diretório do seu projeto Android
+          cd path/to/your/project
 
-      - name: Instalar pacotes essenciais do SDK
-        run: |
-          echo "Instalando pacotes do SDK..."
-          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2"
-
-      - name: Verificar AIDL
-        run: |
-          # Verificar se o AIDL foi instalado corretamente
-          if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
-            echo "Erro: AIDL não encontrado! Tentando reinstalar build-tools..."
-            $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;33.0.2"
-            if [ ! -f "$ANDROID_HOME/build-tools/33.0.2/aidl" ]; then
-              echo "Erro: AIDL ainda não foi instalado!"
-              exit 1
-            fi
-          else
-            echo "AIDL encontrado em: $ANDROID_HOME/build-tools/33.0.2/aidl"
-          fi
-
-      - name: Verificar SDK
-        run: |
-          # Verificar se sdkmanager está funcionando corretamente
-          echo "Verificando sdkmanager..."
-          if ! $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --list; then
-            echo "Erro: sdkmanager falhou ao listar os pacotes!"
-            exit 1
-          fi
-
-      - name: Construir o APK
-        run: |
-          echo "Construindo o APK..."
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH
-          echo "Caminho do SDK: $ANDROID_HOME"
-          buildozer -v android debug
+          # Executar Gradle para construir o APK
+          ./gradlew assembleRelease
 
       - name: Fazer upload do APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: bin/*.apk
+          path: app/build/outputs/apk/release/*.apk
