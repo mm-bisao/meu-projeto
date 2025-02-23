@@ -14,6 +14,10 @@ jobs:
       - name: Checar código
         uses: actions/checkout@v4
 
+      - name: Verificar estrutura do diretório
+        run: |
+          ls -la $GITHUB_WORKSPACE  # Verifique a estrutura do diretório para confirmar onde está o gradlew
+
       - name: Instalar dependências
         run: |
           sudo apt update
@@ -49,8 +53,11 @@ jobs:
 
       - name: Construir o APK com Gradle
         run: |
-          # Mudar para o diretório correto do projeto (assumindo que está na raiz)
-          cd $GITHUB_WORKSPACE
+          # Verifique se o gradlew está no diretório correto
+          ls -la $GITHUB_WORKSPACE  # Exibe a estrutura do diretório do projeto
+
+          # Caso o gradlew esteja em uma subpasta, mude para essa pasta
+          cd $GITHUB_WORKSPACE  # Certifique-se de que está no diretório correto do seu projeto
 
           # Executar Gradle para construir o APK
           ./gradlew assembleRelease
