@@ -35,7 +35,7 @@ jobs:
           pip install --upgrade cython
           pip install buildozer
 
-      - name: Baixar e Instalar Android SDK Completo
+            - name: Baixar e Instalar Android SDK Completo
         run: |
           mkdir -p $HOME/android-sdk
           cd $HOME/android-sdk
@@ -51,7 +51,7 @@ jobs:
             ls -la $HOME/android-sdk/cmdline-tools/latest/bin/
             exit 1
           fi
-          echo "sdkmanager encontrado!"
+          echo "sdkmanager encontrado em: $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager"
 
           # Adicionar sdkmanager ao PATH
           echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
