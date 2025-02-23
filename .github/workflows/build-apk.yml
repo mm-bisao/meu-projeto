@@ -16,9 +16,8 @@ jobs:
 
       - name: Verificar estrutura do diretório
         run: |
-          # Verifique se o gradlew está na pasta esperada
-          echo "Estrutura do diretório onde o código foi baixado:"
-          ls -la $GITHUB_WORKSPACE
+          # Listar recursivamente os arquivos no repositório para ajudar a localizar o gradlew
+          ls -R $GITHUB_WORKSPACE
 
       - name: Instalar dependências
         run: |
