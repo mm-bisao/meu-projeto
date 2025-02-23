@@ -29,18 +29,18 @@ jobs:
 
       - name: Baixar e Instalar Android SDK Command-line Tools
         run: |
-          mkdir -p $HOME/android-sdk
+          mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk
           
           # Baixar e extrair o SDK Command-Line Tools
           curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-          unzip commandlinetools.zip -d $HOME/android-sdk
+          unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
           rm commandlinetools.zip
           
-          # Verificar se sdkmanager foi instalado corretamente
-          if [ ! -f "$HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager" ]; then
-            echo "Erro: sdkmanager não encontrado!"
-            ls -la $HOME/android-sdk/cmdline-tools/latest/bin/
+          # Verificar a estrutura de diretórios
+          if [ ! -d "$HOME/android-sdk/cmdline-tools/latest/bin" ]; then
+            echo "Erro: A estrutura do diretório cmdline-tools/latest/bin não foi criada corretamente!"
+            ls -la $HOME/android-sdk/cmdline-tools
             exit 1
           fi
           echo "sdkmanager encontrado em: $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager"
