@@ -16,7 +16,9 @@ jobs:
 
       - name: Verificar estrutura do diretório
         run: |
-          ls -la $GITHUB_WORKSPACE  # Verifique a estrutura do diretório para confirmar onde está o gradlew
+          # Verifique se o gradlew está na pasta esperada
+          echo "Estrutura do diretório onde o código foi baixado:"
+          ls -la $GITHUB_WORKSPACE
 
       - name: Instalar dependências
         run: |
@@ -51,15 +53,23 @@ jobs:
         run: |
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
+      - name: Verificar diretório do projeto
+        run: |
+          # Verificar se o gradlew está no diretório correto
+          if [ -f "$GITHUB_WORKSPACE/gradlew" ]; then
+            echo "gradlew encontrado na raiz do projeto"
+          elif [ -f "$GITHUB_WORKSPACE/app/gradlew" ]; then
+            echo "gradlew encontrado na pasta app/"
+            cd app  # Se o gradlew estiver na pasta app, mude para essa pasta
+          else
+            echo "gradlew não encontrado! Verifique a estrutura do seu repositório."
+            exit 1
+          fi
+
       - name: Construir o APK com Gradle
         run: |
-          # Verifique se o gradlew está no diretório correto
-          ls -la $GITHUB_WORKSPACE  # Exibe a estrutura do diretório do projeto
-
-          # Caso o gradlew esteja em uma subpasta, mude para essa pasta
-          cd $GITHUB_WORKSPACE  # Certifique-se de que está no diretório correto do seu projeto
-
-          # Executar Gradle para construir o APK
+          # Certifique-se de estar no diretório correto
+          echo "Executando gradlew..."
           ./gradlew assembleRelease
 
       - name: Fazer upload do APK
