@@ -61,8 +61,8 @@ jobs:
           # Instalar pacotes essenciais do SDK, incluindo uma versão estável do build-tools
           $HOME/android-sdk/tools/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;33.0.2"
 
-          # Aceitar licenças do SDK
-          yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
+      - name: Aceitar Licenças do Android SDK
+        run: yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
 
       - name: Instalar Build-Tools e AIDL
         run: |
